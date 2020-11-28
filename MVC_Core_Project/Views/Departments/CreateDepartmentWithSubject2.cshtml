@@ -1,0 +1,215 @@
+﻿@model Department
+@{
+    ViewData["Title"] = "CreateDepartmentWithSubject2";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Add Department and Subjects</h4>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="department-tab" data-toggle="tab" href="#department" role="tab" aria-controls="department" aria-selected="true">Department</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="subjects-tab" data-toggle="tab" href="#subjects" role="tab" aria-controls="subjects" aria-selected="false">Subjects</a>
+            </li>
+
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content card-text p-4">
+            <div class="tab-pane active" id="department" role="tabpanel" aria-labelledby="department-tab">
+                <h5 class="card-subtitle">Department</h5>
+                <form asp-action="CreateDepartmentWithSubject" id="formDepartment">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group row">
+                        <label asp-for="DepartmentName" class="col-form-label col-2 text-right"></label>
+
+                        <div class="col-4">
+                            <input asp-for="DepartmentName" class="form-control" />
+                            <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row">
+                            <div class="col-6 text-right">
+                                <button type="button" id="trade-next" class="btn btn-primary btn-sm mr-3">Next</button>
+                            </div>
+
+
+                        </div>*@
+                </form>
+            </div>
+            <div class="tab-pane" id="subjects" role="tabpanel" aria-labelledby="profile-tab">
+                <h5 class="card-subtitle">
+                    Subjects
+                </h5>
+                <form id="formSubject">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Subject Name</th>
+                                <th>Duration</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectTableBody"></tbody>
+                        <tfoot>
+                            @await Html.PartialAsync("_SubjectAddRowPartial", new Subject { })
+
+                        </tfoot>
+                    </table>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-primary btn-sm" id="department-finish">
+                Save & Finish
+            </button>
+        </div>
+    </div>
+</div>
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/libs/bs4-toast/toast.min.css" rel="stylesheet" />
+    </environment>
+}
+@section scripts {
+    <script src="~/libs/validate/jquery.validate.js"></script>
+    <script src="~/libs/validation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/libs/bs4-toast/toast.min.js"></script>
+    <environment include="Development">
+
+
+        <script>
+            var department = {
+                Subjects: []
+            };
+            $('#myTab a').on('click', function (e) {
+                e.preventDefault();
+                if ($(this).attr('id') == "subjects-tab") {
+                    var valid = $('form#formDepartment').valid();
+                    if (!valid) {
+                        e.stopPropagation();
+                        return;
+                    }
+                    else $('#myTab a[href="#subjects"]').tab('show')
+                }
+                $(this).tab('show');
+            });
+            $("button.add").click(function () {
+                //console.log($("#CourseName").val());
+                if (!$("#formSubject").valid()) return;
+                department.Subjects.push({ SubjectName: $("#SubjectName").val(), Duration: $("#Duration").val() });
+                fillSubjectTable();
+
+                $("#SubjectName").val("");
+                $("#Duration").val("")
+            });
+            function fillSubjectTable() {
+                $("#subjectTableBody").empty();
+                //console.log(trade);
+                var i = department.Subjects.length - 1;
+                for (var i = 0; i < department.Subjects.length; i++) {
+                    $(`<tr>
+                                                    <td>${department.Subjects[i].SubjectName}</td>
+                                                    <td>${department.Subjects[i].Duration}</td>
+                                                    <td><button type='button' class="btn btn-danger btn-sm del-subject" data-index=${i}><span class="fa fa-trash"></span></button></td>
+                                                </tr>`)
+                        .appendTo($("#subjectTableBody"));
+                }
+                $("button.del-subject").click(function () {
+
+                    var index = $(this).data("index");
+                    department.Subjects.splice(index, 1);
+                    $(this).closest("tr").remove();
+                });
+
+
+            }
+            $("#department-finish").click(() => {
+                var valid = $('form#formDepartment').valid();
+                if (!valid) {
+                    $.toast({
+                        title: 'Error!',
+                        subtitle: 'Missing.',
+                        content: 'Errors in trade data.',
+                        type: 'warning',
+                        delay: 3000,
+                        dismissible: true,
+
+                        // is stackable?
+                        stackable: true,
+                        position: 'top-center bottom-right'
+
+                    });
+                }
+                if (department.Subjects.length == 0) {
+                    $.toast({
+                        title: 'Error!',
+                        subtitle: 'Information missing.',
+                        content: 'No subject added.',
+                        type: 'warning',
+                        delay: 3000,
+                        dismissible: true,
+
+                        // is stackable?
+                        stackable: true,
+                        position: 'top-center bottom-right'
+
+                    });
+                }
+                if (!valid || department.Subjects.length == 0) return;
+                department.DepartmentName = $('#DepartmentName').val();
+                console.log(department);
+                var dataType = 'application/json; charset=utf-8';
+                $.ajax({
+                    type: "POST",
+                    url: "/Departments/CreateDepartmentWithSubject",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(department),
+                    complete: function (jqXHR) {
+                        if (jqXHR.readyState === 4) {
+
+                            var r = JSON.parse(jqXHR.responseText);
+                            console.log(r);
+                            if (r.success == true) {
+                                console.log('ok');
+                                $.toast({
+                                    title: 'Success!',
+                                    subtitle: 'Done.',
+                                    content: 'Data saved sucessfully.',
+                                    type: 'success',
+                                    delay: 3000,
+                                    dismissible: true,
+
+                                    // is stackable?
+                                    stackable: true,
+                                    position: 'top-right'
+
+                                });
+                                $('form#formDepartment').trigger('reset');
+                                trade = {
+                                    Courses: []
+                                };
+                                $("#subjectTableBody").empty();
+                            }
+
+                        }
+                    }
+                });
+            });
+        </script>
+    </environment>
+}
+

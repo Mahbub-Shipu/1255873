@@ -1,0 +1,186 @@
+﻿@model Subject
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Edit Subject</h4>
+    </div>
+    <div class="card-body">
+        @if (ViewBag.PostBack != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Success!</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p>Data Save Successfully.</p>
+            </div>
+        }
+        <form id="formCourse" name="formCourse">
+            <h5 class="card-subtitle">Subject info</h5>
+            <div class="card-text">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="SubjectId" />
+                <div class="form-group row">
+                    <label asp-for="DepartmentId" class="col-form-label col-2 text-right"></label>
+                    <div class="col-4">
+                        <select class="form-control" asp-for="DepartmentId" asp-items="@(new SelectList(ViewBag.Trades,"DepartmentId", "DepartmentName"))">
+                            <option value="">Select</option>
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="SubjectName" class="col-form-label col-2 text-right"></label>
+                    <div class="col-4">
+                        <input asp-for="SubjectName" class="form-control" />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label asp-for="Duration" class="col-form-label col-2 text-right"></label>
+                    <div class="col-4">
+                        <input asp-for="Duration" class="form-control" />
+                        <span asp-validation-for="Duration" class="text-danger"></span>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <h5 class="card-subtitle">Students</h5>
+            <div class="card-text">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Stduent Name</th>
+                            <th>Birth Date</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.Students)
+                        {
+                            @await Html.PartialAsync("_StudentEditRow", s)
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </form>
+        <div class="d-flex justify-content-end">
+            <input type="button" value="Update data" class="btn btn-primary" id="save" />
+        </div>
+    </div>
+    <div class="card-footer">
+
+        <div class="d-flex">
+            <a class="card-link" asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to list</a>
+            <a class="card-link ml-auto" asp-action="Index">Assign course <span class="fa fa-long-arrow-right"></span></a>
+        </div>
+
+    </div>
+</div>
+
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/libs/gijgo/combined/css/gijgo.css" rel="stylesheet" />
+        <link href="~/libs/bs4-toast/toast.min.css" rel="stylesheet" />
+    </environment>
+}
+@section scripts {
+    <script src="~/libs/validate/jquery.validate.js"></script>
+    <script src="~/libs/validation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/libs/bs4-toast/toast.min.js"></script>
+    <script src="~/libs/gijgo/combined/js/gijgo.js"></script>
+    <script>
+        $(document).ready(() => {
+            var data = {
+                Students: []
+            };
+            $('input.date').each(function () {
+                $(this).datepicker({
+                    uiLibrary: 'bootstrap4',
+                    format: 'yyyy-mm-dd'
+                });
+            });
+            $("button.student-del").click(function () {
+                $(this).closest("tr").remove();
+            });
+            $("#save").click(() => {
+                console.log('ok');
+                data.SubjectId = $("#SubjectId").val();
+                data.DepartmentId = $("#DepartmentId").val();
+                data.SubjectName = $("#SubjectName").val();
+                data.Duration = $("#Duration").val();
+                var ids = $("input[name='StudentId']");
+                var names = $("input[name='StudentName']");
+                var dobs = $("input[name='Birthday']");
+                var emails = $("input[name='Email']");
+                var address = $("input[name='Address']");
+                $.each(ids, function (i, el) {
+                    data.Students.push({
+                        StudentId: $(el).val(),
+                        StudentName: $(names[i]).val(),
+                        Birthday: $(dobs[i]).val(),
+                        Email: $(emails[i]).val(),
+                        Address: $(address[i]).val()
+                    });
+                });
+                console.log(data);
+                $.ajax({
+                    type: "POST",
+                    url: "/Subjects/SaveCourse",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data)
+                }).done(r => {
+                    console.log(r);
+                    if (r.success == true) {
+                        $.toast({
+                            title: 'Success!',
+                            subtitle: 'Saved',
+                            content: 'Data saved successfully.',
+                            type: 'success',
+                            delay: 3000,
+                            dismissible: true,
+
+                            // is stackable?
+                            stackable: true,
+                            position: 'top-right'
+
+                        });
+                    }
+                    else {
+                        $.toast({
+                            title: 'Error!',
+                            subtitle: 'Failed.',
+                            content: 'Data update failed.',
+                            type: 'warning',
+                            delay: 3000,
+                            dismissible: true,
+
+                            // is stackable?
+                            stackable: true,
+                            position: 'top-center bottom-right'
+
+                        });
+                    }
+                }).fail(err => {
+                    console.log(err);
+                });
+            });
+        });
+    </script>
+
+}
+

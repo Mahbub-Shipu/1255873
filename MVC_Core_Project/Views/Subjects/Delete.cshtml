@@ -1,0 +1,82 @@
+﻿@model MVC_Core_Project.Models.Subject
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="card rounded">
+    <div class="card-header bg-danger text-white">
+        <h4 class="card-title"><span class="fa fa-exclamation"></span> Are you sure you want to delete this?</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="card-subtitle">Subject details</h5>
+        <hr />
+        <div class="card-text">
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.SubjectName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.SubjectName)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Duration)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Duration)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Department)
+                </dt>
+                
+            </dl>
+
+        </div>
+        <h5 class="card-subtitle">Students details</h5>
+        <hr />
+        <div class="card-text">
+            <table class="table table-bordered bg-light table-striped">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Birth Date</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model.Students)
+                    {
+                    <tr>
+                        <td>@Html.DisplayFor(x => s.StudentName)</td>
+                        <td>@Html.DisplayFor(x => s.Birthday)</td>
+                        <td>@Html.DisplayFor(x => s.Email)</td>
+                        <td>@Html.DisplayFor(x => s.Address)</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end">
+                <form asp-action="Delete" class="ml-auto mr-1">
+                    <input type="hidden" asp-for="SubjectId" />
+                    <input type="submit" value="Confirm Delete" class="btn btn-danger" />
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white">
+        <div class="d-flex">
+            <a asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to List</a>
+            <a asp-action="Edit" asp-route-id="@Model.SubjectId" class="ml-auto">Edit this item <span class="fa fa-long-arrow-right"></span></a>
+        </div>
+    </div>
+</div>
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+
+    </environment>
+}
+

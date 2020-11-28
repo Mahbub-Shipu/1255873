@@ -1,0 +1,24 @@
+﻿@model MVC_Core_Project.Models.Subject
+<tr>
+    <td>
+
+        <input asp-for="SubjectName" class="form-control form-control-sm" />
+        <span asp-validation-for="SubjectName" class="text-danger"></span>
+    </td>
+    <td>
+
+        <div class="input-group input-group-sm mb-2">
+
+            <input type="text" asp-for="Duration" class="form-control form-control-sm" value="" />
+            <div class="input-group-append input-group-append-sm">
+                <div class="input-group-text">Hrs</div>
+            </div>
+        </div>
+
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </td>
+
+    <td style="width:90px">
+        <button type="button" class="btn btn-primary btn-sm add"><span class="fa fa-plus"></span> Add</button>
+    </td>
+</tr>

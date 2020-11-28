@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <environment include="Development">
+        <link href="~/libs/bootstrap/css/bootstrap.css" rel="stylesheet" />
+        <script src="~/libs/popper/umd/popper.js"></script>
+        <script src="~/libs/jquery/jquery.js"></script>
+        <style>
+            body {
+                padding-top: 70px;
+            }
+
+            .body-wrap {
+                padding: 0 25px;
+            }
+        </style>
+    </environment>@RenderSection("styles", false)
+</head>
+<body>
+    <nav class="navbar navbar-dark navbar-expand-md bg-success border-bottom shadow-sm fixed-top">
+        <div class="container">
+            <a asp-controller="Home" asp-action="Index" class="navbar-brand text-dark">ASAUB</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topnavbar" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse" id="topnavbar">
+                <ul class="navbar-nav nav">
+                    <li class="nav-item"><a asp-controller="Home" asp-action="Index" class="nav-link text-dark">Home</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Details
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" asp-action="Index" asp-controller="Departments">Departments</a>
+                            <a class="dropdown-item" asp-action="Index" asp-controller="Subjects">Subjects</a>
+                            <a class="dropdown-item" asp-action="Index" asp-controller="Students">Students</a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav nav ml-auto">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                            </form>
+                        </li>
+
+
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="min-height:500px;padding-top:20px;">
+        @RenderBody()
+    </div>
+    <footer class="page-footer">
+        <div class="body-wrap text-center" style="padding-bottom:15px;"> &copy;@DateTime.Now.Year- Md. Mahbububl Alom Shipu</div>
+    </footer>
+    <environment include="Development">
+        <script src="~/libs/bootstrap/js/bootstrap.js"></script>
+    </environment>
+    @RenderSection("scripts", false)
+</body>
+
+</html>

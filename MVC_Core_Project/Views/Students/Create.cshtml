@@ -1,0 +1,104 @@
+﻿@model MVC_Core_Project.Models.Student
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Create Student</h4>
+    </div>
+    <div class="card-body">
+        @if (ViewBag.PostBack != null)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Success!</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p>Data Save Successfully.</p>
+            </div>
+        }
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group row">
+                <label asp-for="SubjectId" class="col-form-label col-2 text-right"></label>
+                <div class="col-4">
+                    <select class="form-control" asp-for="SubjectId" asp-items="@(new SelectList(ViewBag.Subjects,"SubjectId", "SubjectName"))">
+                        <option value="">Select</option>
+                    </select>
+                    <span asp-validation-for="SubjectId" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="StudentName" class="col-form-label col-2 text-right"></label>
+                <div class="col-4">
+                    <input asp-for="StudentName" class="form-control" />
+                    <span asp-validation-for="StudentName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Birthday" class="col-form-label col-2 text-right"></label>
+                <div class="col-4">
+                    <input type="text" asp-for="Birthday" class="form-control" />
+                    <span asp-validation-for="Birthday" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label asp-for="Email" class="col-form-label col-2 text-right"></label>
+                <div class="col-4">
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Address" class="col-form-label col-2 text-right"></label>
+                <div class="col-4">
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-4 offset-2">
+                    <input type="submit" value="Save data" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+
+        <div class="d-flex">
+            <a class="card-link" asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to list</a>
+
+        </div>
+
+    </div>
+</div>
+
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/libs/gijgo/combined/css/gijgo.css" rel="stylesheet" />
+        <link href="~/libs/bs4-toast/toast.min.css" rel="stylesheet" />
+    </environment>
+}
+@section scripts {
+    <script src="~/libs/validate/jquery.validate.js"></script>
+    <script src="~/libs/validation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/libs/bs4-toast/toast.min.js"></script>
+    <script src="~/libs/gijgo/combined/js/gijgo.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            $("#Birthday").datepicker({
+                uiLibrary: 'bootstrap4',
+                format: 'yyyy-mm-dd'
+            });
+        });
+    </script>
+
+}
+

@@ -1,0 +1,70 @@
+﻿@model MVC_Core_Project.Models.Student
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="card rounded">
+    <div class="card-header bg-danger text-white">
+        <h4 class="card-title"><span class="fa fa-exclamation"></span> Are you sure you want to delete this?</h4>
+    </div>
+    <div class="card-body">
+        <h4 class="card-subtitle">Student details</h4>
+        <hr />
+        <div class="card-text">
+            <dl class="row">
+                <dt class="col-2 text-right">
+                    @Html.DisplayNameFor(model => model.StudentName)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.StudentName)
+                </dd>
+                <dt class="col-2 text-right">
+                    @Html.DisplayNameFor(model => model.Birthday)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.Birthday)
+                </dd>
+                <dt class="col-2 text-right">
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+                <dt class="col-2 text-right">
+                    @Html.DisplayNameFor(model => model.Address)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.Address)
+                </dd>
+                <dt class="col-2 text-right">
+                    @Html.DisplayNameFor(model => model.Subject)
+                </dt>
+                <dd class="col-10">
+                    @Html.DisplayFor(model => model.Subject.SubjectName)
+                </dd>
+            </dl>
+            <div class="d-flex justify-content-end mr-3">
+                <form asp-action="Delete" class="ml-auto mr-3">
+                    <input type="hidden" asp-for="StudentId" />
+                    <input type="submit" value="Confirm Delete" class="btn btn-danger" />
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-white">
+        <div class="d-flex">
+            <a asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to List</a>
+            <a asp-action="Edit" asp-route-id="@Model.StudentId" class="ml-auto">Edit this item <span class="fa fa-long-arrow-right"></span></a>
+        </div>
+    </div>
+</div>
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+
+    </environment>
+}
+

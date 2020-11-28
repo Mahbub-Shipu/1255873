@@ -1,0 +1,24 @@
+﻿@model Student
+<tr>
+    <td>
+        <input type="hidden" asp-for="StudentId" />
+        <input asp-for="StudentName" class="form-control" />
+        <span asp-validation-for="StudentName" class="text-danger"></span>
+    </td>
+    <td>
+        <input type="text" asp-for="Birthday" class="form-control date" />
+        <span asp-validation-for="Birthday" class="text-danger"></span>
+    </td>
+    <td>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </td>
+    <td>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </td>
+    <th>
+        <button type="button" class="btn btn-danger student-del">Del</button>
+    </th>
+</tr>
+

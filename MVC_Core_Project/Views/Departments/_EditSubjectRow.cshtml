@@ -1,0 +1,18 @@
+﻿@model MVC_Core_Project.Models.Subject
+<tr>
+    <td>
+        <input type="hidden" asp-for="SubjectId" />
+        <input asp-for="SubjectName" class="form-control form-control-sm" />
+        <span asp-validation-for="SubjectName" class="text-danger"></span>
+    </td>
+    <td>
+
+        <input type="text" asp-for="Duration" class="form-control form-control-sm" />
+
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </td>
+
+    <td style="width:120px">
+        <button type="button" class="btn btn-danger btn-sm del-subject"><span class="fa fa-trash"></span> Delete</button>
+    </td>
+</tr>

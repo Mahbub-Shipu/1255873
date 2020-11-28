@@ -1,0 +1,169 @@
+﻿@model IEnumerable<MVC_Core_Project.Models.Subject>
+@{
+    ViewData["Title"] = "Index";
+}
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common
+
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Subject List</h4>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-1">
+            <div class="btn-group btn-group-sm mr-1" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="fa fa-filter"></span> Department
+                </button>
+                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    @*<a class="dropdown-item" asp-action="Index" asp-controller="Courses">All</a>*@
+
+                    @foreach (Department d in ViewBag.Departments)
+                    {
+                        <a class="dropdown-item" asp-action="Index" asp-controller="Subjects" asp-route-tradeId="@d.DepartmentId">@d.DepartmentName</a>
+                    }
+                </div>
+
+            </div>
+
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-success">Action</button>
+                <button type="button" class="btn  btn-success" dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" asp-action="Create" asp-controller="Subjects">Assign Subjects</a>
+                    <a class="dropdown-item" asp-action="CreateSingle" asp-controller="Subjects">Create Subjects</a>
+                    <a class="dropdown-item" asp-action="Create" asp-controller="Subjects">Create Student</a>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="card-text">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.SubjectName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Duration)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Department.DepartmentName)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="width:50px">
+                                <button type="button" class="btn btn-sm subject" data-subject-pk="@item.SubjectId"><span class="fa fa-plus-square"></span></button>
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SubjectName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Duration)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+                            </td>
+                            <td>
+                                <a asp-action="EditSingle" asp-controller="Subjects" asp-route-id="@item.SubjectId" class="btn btn-primary btn-sm rounded-circle"><span class="fa fa-pencil"></span></a>
+
+
+                                <a asp-action="Edit" asp-controller="Subjects" asp-route-id="@item.SubjectId" class="btn btn-secondary btn-sm rounded-circle"><span class="fa fa-pencil-square-o"></span></a>
+                                <a asp-action="Delete" asp-controller="Subjects" asp-route-id="@item.SubjectId" class="btn btn-danger btn-sm rounded-circle"><span class="fa fa-trash"></span></a>
+                            </td>
+                        </tr>
+                        <tr style="display:none;" id="subject-@item.SubjectId" class="child-row">
+                            <td>&nbsp;</td>
+                            <td colspan="4">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+
+                                            <th>Student Name</th>
+                                            <th>Birth Date</th>
+                                            <th>E-mail</th>
+                                            <th>Address</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var child in item.Students)
+                                        {
+                                        <tr>
+
+                                            <td>@child.StudentName</td>
+                                            <td>@child.Birthday.ToString("yyyy-MM-dd")</td>
+                                            <td><a href="mailto:@child.Email">@child.Email</a></td>
+                                            <td>@child.Address</td>
+                                            <td>
+                                                <a asp-action="Edit" asp-controller="Students" asp-route-id="@child.StudentId" class="btn btn-primary btn-sm rounded-circle"><span class="fa fa-pencil"></span></a>
+                                                <a asp-action="Delete" asp-controller="Students" asp-route-id="@child.StudentId" class="btn btn-danger btn-sm rounded-circle"><span class="fa fa-trash"></span></a>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end">
+                @(Html.Pager((IPagedList)Model)
+                                  .Url(page => Url.Action("Index", "Subjects", new { page = page }))
+                                   .DisplayLinkToFirstPage(PagedListDisplayMode.IfNeeded)
+                                                        .DisplayLinkToLastPage(PagedListDisplayMode.IfNeeded)
+                                                        .DisplayLinkToPreviousPage()
+                                                        .DisplayLinkToNextPage()
+                                                        .MaximumPageNumbersToDisplay(3)
+                                                        .DisplayPageCountAndCurrentLocation(true)
+                                  .Build()
+                )
+            </div>
+        </div>
+
+    </div>
+    <div class="card-footer">
+        <div class="d-flex">
+            <a class="card-link" asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to list</a>
+            <a class="card-link ml-auto" asp-action="Create" asp-controller="Subjects">Assign course <span class="fa fa-long-arrow-right"></span></a>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <environment include="Development">
+
+        <script>
+            $(document).ready(() => {
+                $("button.subject").click(function () {
+                    console.log('ok')
+                    var id = $(this).data("subject-pk");
+                    $("#subject-" + id).toggle();
+                    $(this).find("span").toggleClass("fa-plus-square fa-minus-square");
+                });
+            });
+        </script>
+    </environment>
+}
+@section styles{
+    <environment include="Development">
+        <link href="~/libs/PagedList/PagedList.css" rel="stylesheet" />
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+    </environment>
+}
+

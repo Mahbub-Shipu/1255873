@@ -1,0 +1,224 @@
+﻿@model Subject
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="card bg-white">
+    <div class="card-header bg-dark text-white">
+        <h4 class="card-title">Assign Student to Subject</h4>
+    </div>
+    <div class="card-body">
+        <div class="card-text">
+            <h5 class="card-subtitle">Department and Subject</h5>
+            <form id="formSubject">
+                <div class="form-group row">
+                    <label asp-for="DepartmentId" class="col-form-label col-2 text-right"></label>
+                    <div class="col-4">
+                        <select class="form-control" asp-for="DepartmentId" asp-items="@(new SelectList(ViewBag.Departments,"DepartmentId", "DepartmentName"))"></select>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label asp-for="SubjectId" class="col-form-label col-2 text-right"></label>
+                    <div class="col-4">
+                        <select class="form-control" asp-for="SubjectId"></select>
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-text" id="part-students">
+            <h5 class="card-subtitle">Students</h5>
+            <form id="formStudents">
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Birth Date</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTbody"></tbody>
+                    <tfoot>
+                        @await Html.PartialAsync("_StudentAddRow", new Student { })
+                    </tfoot>
+                </table>
+            </form>
+            <div class="text-right">
+                <button type="button" class="btn btn-success" id="saveall">Save All</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+
+        <div class="d-flex">
+            <a class="card-link" asp-action="Index"><span class="fa fa-long-arrow-left"></span> Back to list</a>
+            <a class="card-link ml-auto" asp-action="CreateSingle">Create Subject <span class="fa fa-long-arrow-right"></span></a>
+        </div>
+
+    </div>
+</div>
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/libs/gijgo/combined/css/gijgo.css" rel="stylesheet" />
+        <link href="~/libs/bs4-toast/toast.min.css" rel="stylesheet" />
+    </environment>
+}
+@section scripts {
+
+    <script src="~/libs/validate/jquery.validate.js"></script>
+    <script src="~/libs/validation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/libs/bs4-toast/toast.min.js"></script>
+    <script src="~/libs/gijgo/combined/js/gijgo.js"></script>
+    <script>
+        var students = [];
+        $(document).ready(() => {
+            $("#part-students").hide();
+            var selectSubject = $("#SubjectId")
+            $("#SubjectId").attr("disabled", "disabled");
+
+            $("#Birthday").datepicker({
+                uiLibrary: 'bootstrap4',
+                format: 'yyyy-mm-dd'
+            });
+            $("#Birthday").val('');
+
+            $("#DepartmentId").on("change", function () {
+
+                var departmentId = $(this).val();
+                if (departmentId != 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/Subjects/GetSubjectOptions/" + departmentId,
+                        dataType: "json"
+                    }).done((r) => {
+                        console.log(r);
+                        selectSubject.empty();
+                        for (var i = 0; i < r.length; i++) {
+                            $(`<option value="${r[i].subjectId}">${r[i].subjectName}</option>`)
+                                .appendTo(selectSubject);
+                        }
+                        selectSubject.removeAttr("disabled");
+                    })
+                        .fail((err) => {
+                            console.log(err);
+                        });
+
+                }
+                else {
+                    selectSubject.empty();
+                    selectSubject.attr("disabled", "disabled");
+                    $("#part-students").hide();
+                }
+            });
+            $("#SubjectId").on("change", function () {
+                //console.log('ok')
+                if ($("#SubjectId").val() == '0' || $("#DepartmentId").val() == '0') {
+                    $("#part-students").hide();
+                    return;
+                }
+
+                $("#part-students").show();
+            });
+            $('button.student-add').click(function () {
+                var valid = $("#formStudents").valid();
+                if (!valid) return;
+                students.push({
+                    SubjectId: $("#SubjectId").val(),
+                    StudentName: $("#StudentName").val(),
+                    Birthday: $("#Birthday").val(),
+                    Email: $("#Email").val(),
+                    Address: $("#Address").val()
+                });
+                console.log(students);
+                fillStudentsTable();
+                $("#formStudents").trigger('reset');
+                $("#Birthday").val('');
+            });
+
+            $("#saveall").click(function () {
+                if (students.length == 0) {
+                    $.toast({
+                        title: 'Error!',
+                        subtitle: 'Information missing.',
+                        content: 'No student added.',
+                        type: 'warning',
+                        delay: 3000,
+                        dismissible: true,
+
+                        // is stackable?
+                        stackable: true,
+                        position: 'top-center bottom-right'
+
+                    });
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/Subjects/SaveStudents",
+                    type: "josn",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(students),
+                }).done(function (r) {
+                    if (r.success == false) {
+                        $.toast({
+                            title: 'Error!',
+                            subtitle: 'Information missing.',
+                            content: 'No student added.',
+                            type: 'warning',
+                            delay: 3000,
+                            dismissible: true,
+
+                            // is stackable?
+                            stackable: true,
+                            position: 'top-center bottom-right'
+
+                        });
+                        return;
+                    }
+                    $.toast({
+                        title: 'Success!',
+                        subtitle: 'Saved',
+                        content: 'Data saved successfully.',
+                        type: 'success',
+                        delay: 3000,
+                        dismissible: true,
+
+                        // is stackable?
+                        stackable: true,
+                        position: 'top-right'
+
+                    });
+                    $("#formSubject").trigger('reset');
+                    students = [];
+                    fillStudentsTable();
+                    $("#part-students").hide();
+
+                    $("#SubjectId").attr("disabled", "disabled");
+                    $("#formStudents").trigger('reset');
+                    $("#Birthday").val('');
+                })
+            });
+        });
+        function fillStudentsTable() {
+            $("#studentTbody").empty();
+            for (var i = 0; i < students.length; i++) {
+                $(`<tr>
+                                            <td>${students[i].StudentName}</td>
+                                            <td>${students[i].Birthday}</td>
+                                            <td>${students[i].Email}</td>
+                                            <td>${students[i].Address}</td>
+                                            <td></td>
+                                        </tr>`)
+                    .appendTo($("#studentTbody"));
+            }
+        }
+    </script>
+}
+

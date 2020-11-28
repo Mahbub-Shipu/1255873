@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "twitter-bootstrap@4.5.2",
+      "destination": "wwwroot/libs/bootstrap/"
+    },
+    {
+
+      "library": "popper.js@1.13.0",
+      "destination": "wwwroot/libs/popper"
+    },
+    {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/libs/jquery"
+    },
+    {
+      "library": "jquery-validate@1.19.2",
+      "destination": "wwwroot/libs/validate"
+    },
+    {
+      "library": "jquery-validation-unobtrusive@3.2.11",
+      "destination": "wwwroot/libs/validation"
+    },
+    {
+      "library": "jquery-ajax-unobtrusive@3.2.6",
+      "destination": "wwwroot/libs/ajax"
+    },
+    {
+      "library": "font-awesome@4.7.0",
+      "destination": "wwwroot/libs/fontawesome"
+    },
+    {
+      "library": "bootstrap-datepicker@1.9.0",
+      "destination": "wwwroot/libs/datepicker"
+    },
+    {
+      "library": "gijgo@1.9.13",
+      "destination": "wwwroot/libs/gijgo"
+    }
+  ]
+}

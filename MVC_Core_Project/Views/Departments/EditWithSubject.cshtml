@@ -1,0 +1,138 @@
+﻿@model Department
+@{
+    ViewData["Title"] = "EditWithSubject";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Edit Department</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="EditWithSubject" id="formDepartment" name="formDepartment">
+            <h5 class="card-subtitle">Department info</h5>
+            <div class="card-text" id="part-department">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="DepartmentId" />
+                <div class="form-group row">
+                    <label asp-for="DepartmentName" class="col-form-label col-2 text-right"></label>
+
+                    <div class="col-4">
+                        <input asp-for="DepartmentName" class="form-control" />
+                        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <h5 class="card-subtitle">Subjects</h5>
+            <div class="card-text" id="part-subject">
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Duration</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Subjects)
+                        {
+                            @await Html.PartialAsync("_EditSubjectRow", c)
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex">
+            <a asp-action="Index" asp-controller="Department"><span class="fa fa-long-arrow-left"></span> Back to list</a>
+            <button type="button" class="btn btn-primary btn-sm ml-auto" id="department-finish">
+                Update & Finish
+            </button>
+        </div>
+    </div>
+</div>
+
+
+@section styles {
+
+    <environment include="Development">
+        <link href="~/libs/fontawesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/libs/bs4-toast/toast.min.css" rel="stylesheet" />
+    </environment>
+}
+@section scripts {
+    <script src="~/libs/validate/jquery.validate.js"></script>
+    <script src="~/libs/validation/jquery.validate.unobtrusive.js"></script>
+    <script src="~/libs/bs4-toast/toast.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("button.del-subject").click(function () {
+                $(this).closest("tr").remove();
+            })
+            $("button#department-finish").click(() => {
+                console.log('ok');
+                var valid = $("form#formDepartment").valid();
+                if (!valid) return;
+                var data = {
+                    Subjects: []
+                };
+                data.DepartmentId = $("#DepartmentId").val();
+                data.DepartmentName = $("#DepartmentName").val();
+                var names = $("input[name='SubjectName']")
+                var durations = $("input[name='Duration']")
+                $.each($("input[name='SubjectId']"), function (i, el) {
+                    //console.log($(el).val());
+                    //console.log($(names[i]).val());
+                    //console.log($(durations[i]).val());
+                    data.Subjects.push({ SubjectId: $(el).val(), SubjectName: $(names[i]).val(), Duration: $(durations[i]).val() });
+                });
+                console.log(data);
+                $.ajax({
+                    type: "POST",
+                    url: "/Departments/EditWithSubject",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data)
+                }).done(r => {
+                    console.log(r);
+                    if (r.success == true) {
+                        $.toast({
+                            title: 'Success!',
+                            subtitle: 'Saved',
+                            content: 'Data saved successfully.',
+                            type: 'success',
+                            delay: 3000,
+                            dismissible: true,
+
+                            // is stackable?
+                            stackable: true,
+                            position: 'top-right'
+
+                        });
+                    }
+                    else {
+                        $.toast({
+                            title: 'Error!',
+                            subtitle: 'Failed.',
+                            content: 'Data update failed.',
+                            type: 'warning',
+                            delay: 3000,
+                            dismissible: true,
+
+                            // is stackable?
+                            stackable: true,
+                            position: 'top-center bottom-right'
+
+                        });
+                    }
+                }).fail(err => {
+                    console.log(err);
+                });
+            });
+        });
+    </script>
+}
+
